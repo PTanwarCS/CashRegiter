@@ -122,7 +122,7 @@ public class CashRegister {
                 this.cash.numberOf1 -= n1;
             } else {
                 rollbackDenomination(paid);
-                throw new RuntimeException("Changes not available.");
+                throw new RuntimeException("Denominations not available.");
             }
         }
 
