@@ -2,6 +2,7 @@
 
 Create a cash register class in Java that should be able to accept only $20, $10, $5, $2 and $1 bills. Given the charge and amount of money received, return the change in each denomination that should be given from the cash register. Sometimes when the exact changes couldn't be made, they would tell us. Implement methods in the following class (you are free to change):
 
+```
 /**
  * Implement methods with TODO comments.
  * You are free to change anything.
@@ -59,11 +60,12 @@ public class CashRegister {
     }
 
 }
+```
 
 
 
 Here are some sample results:
-r = new CashRegister( new Cash(1,1,2,5,1));
+`r = new CashRegister( new Cash(1,1,2,5,1));`
 // current state
     $20 1
     $10 1
@@ -72,7 +74,7 @@ r = new CashRegister( new Cash(1,1,2,5,1));
     $1 1
 
 // add 1 $20 bill
-r.add(new Cash(10,0,0,0,0);
+`r.add(new Cash(10,0,0,0,0);`
 // current state
     $20 2
     $10 1
@@ -81,7 +83,7 @@ r.add(new Cash(10,0,0,0,0);
     $1 1
 
 // given $10 for charge $2
-c = r.getChanges(2, new Cash(0,1,0,0,0);
+`c = r.getChanges(2, new Cash(0,1,0,0,0);`
 // should return
 $20 0
 $10 0
@@ -96,7 +98,7 @@ $1 1
     $1 0
 
 // given $10 for charge $2
-c = r.getChanges(2, new Cash(0,1,0,0,0);
+`c = r.getChanges(2, new Cash(0,1,0,0,0);`
 // should return
 $20 0
 $10 0
@@ -111,5 +113,5 @@ $1 0
     $1 0
 
 // given $20 for charge $1
-c = r.getChanges(1, new Cash(1,0,0,0,0)
+`c = r.getChanges(1, new Cash(1,0,0,0,0)`
 // not possible
