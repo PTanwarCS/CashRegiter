@@ -81,14 +81,14 @@ public class CashRegister {
             rollbackDenomination(paid);
             throw new RuntimeException("Not enough money");
         }
-
+    //48
         int quotient = returnAmount / 20;
 
-        //to be returned in response
+        //to be returned in response 48
         int n20 = 0, n10 = 0, n5 = 0, n2 = 0, n1 = 0;
 
         if (quotient > 0) {
-            n20 = quotient;
+            n20 = quotient; //2
             //check if denomination available
             if (this.cash.numberOf20 >= n20) {
                 returnAmount = returnAmount % 20;
