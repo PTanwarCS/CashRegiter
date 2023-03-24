@@ -64,7 +64,8 @@ public class CashRegister {
 
 
 
-Here are some sample results:     
+Here are some sample results:    
+```
 `r = new CashRegister( new Cash(1,1,2,5,1));`    
 // current state
     $20 1
@@ -74,7 +75,7 @@ Here are some sample results:
     $1 1
 
 // add 1 $20 bill.   
-`r.add(new Cash(10,0,0,0,0);`   
+`r.add(new Cash(1,0,0,0,0);`   
 // current state
     $20 2
     $10 1
@@ -107,7 +108,7 @@ $2 4
 $1 0
 // current state    
     $20 2
-    $10 2
+    $10 3
     $5 1
     $2 0
     $1 0
@@ -115,3 +116,4 @@ $1 0
 // given $20 for charge $1      
 `c = r.getChanges(1, new Cash(1,0,0,0,0)`    
 // not possible
+```
