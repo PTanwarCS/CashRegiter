@@ -99,6 +99,8 @@ public class CashRegister {
         if (possibleCombinations.isEmpty())
             returnNotPossible(paid);
 
+        Cash response = null;
+
         for (Cash possibleCombination : possibleCombinations) {
             System.out.println(possibleCombination);
             //todo
@@ -107,10 +109,7 @@ public class CashRegister {
             //3. If not available, throw error saying "Not possible"
         }
 
-        //to be returned in response
-        int n20 = 0, n10 = 0, n5 = 0, n2 = 0, n1 = 0; //todo
-
-        return new Cash(n20, n10, n5, n2, n1); //todo
+        return response;
     }
 
     public void rollbackDenominations(Cash cash) {
@@ -122,7 +121,7 @@ public class CashRegister {
     }
 
     /**
-     * return all possible combination of denominations possible
+     * return all possible combination of available denominations
      */
     public static void getAllCombinations(int index, int[] denominations, int[] vals, int target, List<CashRegister.Cash> result, Cash availableCash) {
         if (target == 0) {
@@ -134,11 +133,11 @@ public class CashRegister {
             var n2 = copy[3];
             var n1 = copy[4];
             //add to possible ways only if the denominations available in cash register
-            if ((n20 > 0 && availableCash.numberOf20 > 0)
-                    || (n10 > 0 && availableCash.numberOf10 > 0)
-                    || (n5 > 0 && availableCash.numberOf5 > 0)
-                    || (n2 > 0 && availableCash.numberOf2 > 0)
-                    || (n1 > 0 && availableCash.numberOf1 > 0)
+            if ((availableCash.numberOf20 >= n20)
+                    && (availableCash.numberOf10 >= n10)
+                    && (availableCash.numberOf5 >= n5)
+                    && (availableCash.numberOf2 >= n2)
+                    && (availableCash.numberOf1 >= n1)
             ) {
                 result.add(new CashRegister.Cash(n20, n10, n5, n2, n1));
             }
