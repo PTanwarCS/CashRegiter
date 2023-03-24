@@ -8,9 +8,9 @@ public class Test {
 //        System.out.println("INITIAL------- \n" + r.getCash());
 //        System.out.println("-----------------");
         r.add(new CashRegister.Cash(1, 0, 0, 0, 0));
-//        System.out.println("AFTER ADDITION------- \n" + r.getCash());
-        CashRegister.Cash changes = r.getChanges(2, new CashRegister.Cash(0, 1, 0, 0, 0));
-//        System.out.println(changes);
+        System.out.println("AFTER ADDITION------- \n" + r.getCash());
+        CashRegister.Cash changes = r.getChanges(2, new CashRegister.Cash(1, 0, 0, 0, 0));
+        System.out.println(changes);
 //        System.out.println("AFTER CHANGE-------\n" + r.getCash());
 //        CashRegister.Cash changes2 = r.getChanges(2, new CashRegister.Cash(0, 1, 0, 0, 0));
 //        System.out.println(changes2);

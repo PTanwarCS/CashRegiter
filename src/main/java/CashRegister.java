@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class CashRegister {
 
@@ -63,20 +60,8 @@ public class CashRegister {
             return String.format(r, numberOf20, numberOf10, numberOf5, numberOf2, numberOf1);
 
         }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Cash cash = (Cash) o;
-            return numberOf20 == cash.numberOf20 && numberOf10 == cash.numberOf10 && numberOf5 == cash.numberOf5 && numberOf2 == cash.numberOf2 && numberOf1 == cash.numberOf1;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(numberOf20, numberOf10, numberOf5, numberOf2, numberOf1);
-        }
     }
+
 
     private final Cash cash;
 
@@ -113,17 +98,19 @@ public class CashRegister {
         if (possibleCombinations.isEmpty())
             returnNotPossible(paid);
 
-        Cash response = null;
+        Optional<Cash> first = possibleCombinations.stream()
+                .sorted(Comparator.comparingInt(Cash::getNumberOf20))
+                .sorted(Comparator.comparingInt(Cash::getNumberOf10))
+                .sorted(Comparator.comparingInt(Cash::getNumberOf5))
+                .sorted(Comparator.comparingInt(Cash::getNumberOf2))
+                .sorted(Comparator.comparingInt(Cash::getNumberOf1))
+                .findFirst();
+        //todo: sorting not working properly
 
-        for (Cash possibleCombination : possibleCombinations) {
-            System.out.println(possibleCombination);
-            //todo
-            //1. sort based on larger denomination. Return bigger denomination first. This is not need if handled at loop in getAllCombinations.
-            //2. Get the highest denominations possible.
-            //3. If not available, throw error saying "Not possible"
-        }
+        if (first.isEmpty())
+            returnNotPossible(paid);
 
-        return response;
+        return first.get();
     }
 
     public void rollbackDenominations(Cash cash) {
@@ -135,7 +122,7 @@ public class CashRegister {
     }
 
     /**
-     * return all possible combination of available denominations
+     * Return all possible combination from available denominations
      */
     public static void getAllCombinations(int index, int[] denominations, int[] vals, int target, List<CashRegister.Cash> result, Cash availableCash) {
         if (target == 0) {
