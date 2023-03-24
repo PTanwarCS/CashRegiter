@@ -102,10 +102,9 @@ public class CashRegister {
         for (Cash possibleCombination : possibleCombinations) {
             System.out.println(possibleCombination);
             //todo
-            //1. sort based on larger denomination. Return bigger denomination first. This is not need if handled at looping.
-            //2. check which combination of denomination is available. Can be done in getAllCombinations to reduce extra looping.
-            //3. If found, return and reduce that from Cash
-            //4. If none matches, throw error saying "Not possible"
+            //1. sort based on larger denomination. Return bigger denomination first. This is not need if handled at loop in getAllCombinations.
+            //2. Get the highest denominations possible.
+            //3. If not available, throw error saying "Not possible"
         }
 
         //to be returned in response
@@ -134,7 +133,15 @@ public class CashRegister {
             var n5 = copy[2];
             var n2 = copy[3];
             var n1 = copy[4];
-            result.add(new CashRegister.Cash(n20, n10, n5, n2, n1));
+            //add to possible ways only if the denominations available in cash register
+            if ((n20 > 0 && availableCash.numberOf20 > 0)
+                    || (n10 > 0 && availableCash.numberOf10 > 0)
+                    || (n5 > 0 && availableCash.numberOf5 > 0)
+                    || (n2 > 0 && availableCash.numberOf2 > 0)
+                    || (n1 > 0 && availableCash.numberOf1 > 0)
+            ) {
+                result.add(new CashRegister.Cash(n20, n10, n5, n2, n1));
+            }
             return;
         }
         if (index == denominations.length) return;
