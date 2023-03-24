@@ -60,6 +60,19 @@ public class CashRegister {
             return String.format(r, numberOf20, numberOf10, numberOf5, numberOf2, numberOf1);
 
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Cash cash = (Cash) o;
+            return numberOf20 == cash.numberOf20 && numberOf10 == cash.numberOf10 && numberOf5 == cash.numberOf5 && numberOf2 == cash.numberOf2 && numberOf1 == cash.numberOf1;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(numberOf20, numberOf10, numberOf5, numberOf2, numberOf1);
+        }
     }
 
 
@@ -98,19 +111,20 @@ public class CashRegister {
         if (possibleCombinations.isEmpty())
             returnNotPossible(paid);
 
-        Optional<Cash> first = possibleCombinations.stream()
-                .sorted(Comparator.comparingInt(Cash::getNumberOf20))
-                .sorted(Comparator.comparingInt(Cash::getNumberOf10))
-                .sorted(Comparator.comparingInt(Cash::getNumberOf5))
-                .sorted(Comparator.comparingInt(Cash::getNumberOf2))
-                .sorted(Comparator.comparingInt(Cash::getNumberOf1))
-                .findFirst();
-        //todo: sorting not working properly
+        Optional<Cash> first = possibleCombinations.stream().min(Comparator.comparingInt(o -> (o.getNumberOf20() + o.getNumberOf10() + o.getNumberOf5() + o.getNumberOf2() + o.getNumberOf1())));
 
         if (first.isEmpty())
             returnNotPossible(paid);
 
-        return first.get();
+        Cash cashToReturn = first.get();
+        //deduct from the cash register
+        this.cash.numberOf20 -= cashToReturn.numberOf20;
+        this.cash.numberOf10 -= cashToReturn.numberOf10;
+        this.cash.numberOf5 -= cashToReturn.numberOf5;
+        this.cash.numberOf2 -= cashToReturn.numberOf2;
+        this.cash.numberOf1 -= cashToReturn.numberOf1;
+
+        return cashToReturn;
     }
 
     public void rollbackDenominations(Cash cash) {

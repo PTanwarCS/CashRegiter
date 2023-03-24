@@ -3,8 +3,7 @@ import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -38,11 +37,12 @@ class CashRegisterTest {
         assertEquals(changes.getNumberOf2(), 1);
         assertEquals(changes.getNumberOf1(), 1);
 
-        assertEquals(r.getCash().getNumberOf20(), 2);
-        assertEquals(r.getCash().getNumberOf10(), 2);
-        assertEquals(r.getCash().getNumberOf5(), 1);
-        assertEquals(r.getCash().getNumberOf2(), 4);
-        assertEquals(r.getCash().getNumberOf1(), 0);
+        CashRegister.Cash availableCash = r.getCash();
+        assertEquals(availableCash.getNumberOf20(), 2);
+        assertEquals(availableCash.getNumberOf10(), 2);
+        assertEquals(availableCash.getNumberOf5(), 1);
+        assertEquals(availableCash.getNumberOf2(), 4);
+        assertEquals(availableCash.getNumberOf1(), 0);
     }
 
     @Test
@@ -55,11 +55,60 @@ class CashRegisterTest {
         assertEquals(changes.getNumberOf2(), 4);
         assertEquals(changes.getNumberOf1(), 0);
 
-        assertEquals(r.getCash().getNumberOf20(), 2);
-        assertEquals(r.getCash().getNumberOf10(), 2);
-        assertEquals(r.getCash().getNumberOf5(), 1);
-        assertEquals(r.getCash().getNumberOf2(), 0);
-        assertEquals(r.getCash().getNumberOf1(), 0);
+        CashRegister.Cash availableCash = r.getCash();
+        assertEquals(availableCash.getNumberOf20(), 2);
+        assertEquals(availableCash.getNumberOf10(), 3);
+        assertEquals(availableCash.getNumberOf5(), 1);
+        assertEquals(availableCash.getNumberOf2(), 0);
+        assertEquals(availableCash.getNumberOf1(), 0);
+    }
+
+    @Test
+    @Order(4)
+    void when_get_changes_should_return_error_and_rollback_must_happen() {
+        assertThrows(IllegalStateException.class, () -> r.getChanges(1, new CashRegister.Cash(1, 0, 0, 0, 0)));
+        CashRegister.Cash availableCash = r.getCash();
+        assertEquals(availableCash.getNumberOf20(), 2);
+        assertEquals(availableCash.getNumberOf10(), 3);
+        assertEquals(availableCash.getNumberOf5(), 1);
+        assertEquals(availableCash.getNumberOf2(), 0);
+        assertEquals(availableCash.getNumberOf1(), 0);
+    }
+
+    @Test
+    @Order(5)
+    void when_get_changes_should_return_right_denomination3() {
+        CashRegister.Cash changes = r.getChanges(5, new CashRegister.Cash(0, 3, 0, 0, 0));
+        assertEquals(changes.getNumberOf20(), 1);
+        assertEquals(changes.getNumberOf10(), 0);
+        assertEquals(changes.getNumberOf5(), 1);
+        assertEquals(changes.getNumberOf2(), 0);
+        assertEquals(changes.getNumberOf1(), 0);
+
+        CashRegister.Cash availableCash = r.getCash();
+        assertEquals(availableCash.getNumberOf20(), 1);
+        assertEquals(availableCash.getNumberOf10(), 6);
+        assertEquals(availableCash.getNumberOf5(), 0);
+        assertEquals(availableCash.getNumberOf2(), 0);
+        assertEquals(availableCash.getNumberOf1(), 0);
+    }
+
+    @Test
+    @Order(6)
+    void when_get_changes_should_return_right_denomination4() {
+        CashRegister.Cash changes = r.getChanges(4, new CashRegister.Cash(0, 4, 0, 4, 0));
+        assertEquals(changes.getNumberOf20(), 1);
+        assertEquals(changes.getNumberOf10(), 2);
+        assertEquals(changes.getNumberOf5(), 0);
+        assertEquals(changes.getNumberOf2(), 2);
+        assertEquals(changes.getNumberOf1(), 0);
+
+        CashRegister.Cash availableCash = r.getCash();
+        assertEquals(availableCash.getNumberOf20(), 0);
+        assertEquals(availableCash.getNumberOf10(), 8);
+        assertEquals(availableCash.getNumberOf5(), 0);
+        assertEquals(availableCash.getNumberOf2(), 2);
+        assertEquals(availableCash.getNumberOf1(), 0);
     }
 
     @Test
