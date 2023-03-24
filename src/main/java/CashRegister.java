@@ -1,3 +1,5 @@
+import java.util.*;
+
 public class CashRegister {
 
     public static class Cash {
@@ -35,20 +37,44 @@ public class CashRegister {
             return numberOf1;
         }
 
+        public int getTotalAmount() {
+            int total = 0;
+            total += this.numberOf20 * 20;
+            total += this.numberOf10 * 10;
+            total += this.numberOf5 * 5;
+            total += this.numberOf2 * 2;
+            total += this.numberOf1;
+
+            return total;
+        }
+
         @Override
         public String toString() {
             String r = """
-                    Cash Current State):
-                        numberOf20= %s
-                        numberOf10= %s
-                        numberOf5= %s
-                        numberOf2= %s
-                        numberOf1= %s
+                    numberOf20= %s
+                    numberOf10= %s
+                    numberOf5= %s
+                    numberOf2= %s
+                    numberOf1= %s
                     """;
             return String.format(r, numberOf20, numberOf10, numberOf5, numberOf2, numberOf1);
 
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Cash cash = (Cash) o;
+            return numberOf20 == cash.numberOf20 && numberOf10 == cash.numberOf10 && numberOf5 == cash.numberOf5 && numberOf2 == cash.numberOf2 && numberOf1 == cash.numberOf1;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(numberOf20, numberOf10, numberOf5, numberOf2, numberOf1);
+        }
     }
+
 
     private final Cash cash;
 
@@ -72,84 +98,78 @@ public class CashRegister {
         //Add denominations to existing
         add(paid);
 
-        int totalPaid = getTotalAmount(paid);
-//        System.out.println("total cash paid: " + totalPaid);
+        int totalPaid = paid.getTotalAmount();
         int returnAmount = totalPaid - charge;
-//        System.out.println("total amount to return: " + returnAmount);
 
-        if (returnAmount > getTotalAmount(this.getCash())) {
-            rollbackDenomination(paid);
-            throw new RuntimeException("Not enough money");
-        }
-    //48
-        int quotient = returnAmount / 20;
+        System.out.println("Amount to return: " + returnAmount);
 
-        //to be returned in response 48
-        int n20 = 0, n10 = 0, n5 = 0, n2 = 0, n1 = 0;
+        int[] denominations = {20, 10, 5, 2, 1}; //Todo: hardcoded denominations. To be replaced.
+        int[] vals = new int[denominations.length];
+        var possibleCombinations = new ArrayList<Cash>();
+        getAllCombinations(0, denominations, vals, returnAmount, possibleCombinations, this.cash);
 
-        if (quotient > 0) {
-            n20 = quotient; //2
-            //check if denomination available
-            if (this.cash.numberOf20 >= n20) {
-                returnAmount = returnAmount % 20;
-                this.cash.numberOf20 -= n20;
-            }
-        }
-        if (returnAmount > 0) {
-            n10 = returnAmount / 10;
-            if (this.cash.numberOf10 >= n10) {
-                returnAmount = returnAmount % 10;
-                this.cash.numberOf10 -= n10;
-            }
-        }
-        if (returnAmount > 0) {
-            n5 = returnAmount / 5;
-            if (this.cash.numberOf5 >= n5) {
-                returnAmount = returnAmount % 5;
-                this.cash.numberOf5 -= n5;
-            }
-        }
-        if (returnAmount > 0) {
-            n2 = returnAmount / 2;
-            if (this.cash.numberOf2 >= n2) {
-                returnAmount = returnAmount % 2;
-                this.cash.numberOf2 -= n2;
-            }
-        }
-        if (returnAmount > 0) {
-            if (this.cash.numberOf1 >= returnAmount) {
-                n1 = returnAmount;
-                this.cash.numberOf1 -= n1;
-            } else {
-                rollbackDenomination(paid);
-                throw new RuntimeException("Denominations not available.");
-            }
-        }
+        if (possibleCombinations.isEmpty())
+            returnNotPossible(paid);
 
-        return new Cash(n20, n10, n5, n2, n1);
+        Optional<Cash> first = possibleCombinations.stream().min(Comparator.comparingInt(o -> (o.getNumberOf20() + o.getNumberOf10() + o.getNumberOf5() + o.getNumberOf2() + o.getNumberOf1())));
+
+        if (first.isEmpty())
+            returnNotPossible(paid);
+
+        Cash cashToReturn = first.get();
+        //deduct from the cash register
+        this.cash.numberOf20 -= cashToReturn.numberOf20;
+        this.cash.numberOf10 -= cashToReturn.numberOf10;
+        this.cash.numberOf5 -= cashToReturn.numberOf5;
+        this.cash.numberOf2 -= cashToReturn.numberOf2;
+        this.cash.numberOf1 -= cashToReturn.numberOf1;
+
+        return cashToReturn;
     }
 
-    public int getTotalAmount(Cash cash) {
-        int total = 0;
-        total += cash.numberOf20 * 20;
-        total += cash.numberOf10 * 10;
-        total += cash.numberOf5 * 5;
-        total += cash.numberOf2 * 2;
-        total += cash.numberOf1;
-
-        return total;
-    }
-
-    public int getTotalAmount() {
-        return getTotalAmount(this.getCash());
-    }
-
-    public void rollbackDenomination(Cash cash) {
+    public void rollbackDenominations(Cash cash) {
         this.cash.numberOf20 -= cash.numberOf20;
         this.cash.numberOf10 -= cash.numberOf10;
         this.cash.numberOf5 -= cash.numberOf5;
         this.cash.numberOf2 -= cash.numberOf2;
         this.cash.numberOf1 -= cash.numberOf1;
+    }
+
+    /**
+     * Return all possible combination from available denominations
+     */
+    public static void getAllCombinations(int index, int[] denominations, int[] vals, int target, List<CashRegister.Cash> result, Cash availableCash) {
+        if (target == 0) {
+            var copy = Arrays.copyOf(vals, vals.length); //from copy because actual array mutate
+            //Can be looped, but assume that the vals is of length 5. This would be handled with removal of hardcoded denominations
+            var n20 = copy[0];
+            var n10 = copy[1];
+            var n5 = copy[2];
+            var n2 = copy[3];
+            var n1 = copy[4];
+            //add to possible ways only if the denominations available in cash register
+            if ((availableCash.numberOf20 >= n20)
+                    && (availableCash.numberOf10 >= n10)
+                    && (availableCash.numberOf5 >= n5)
+                    && (availableCash.numberOf2 >= n2)
+                    && (availableCash.numberOf1 >= n1)
+            ) {
+                result.add(new CashRegister.Cash(n20, n10, n5, n2, n1));
+            }
+            return;
+        }
+        if (index == denominations.length) return;
+        int currentDenomination = denominations[index];
+        for (int i = 0; i * currentDenomination <= target; i++) {
+            vals[index] = i;
+            getAllCombinations(index + 1, denominations, vals, target - i * currentDenomination, result, availableCash);
+            vals[index] = 0;
+        }
+    }
+
+    public void returnNotPossible(Cash cashToRollback) {
+        rollbackDenominations(cashToRollback);
+        throw new IllegalStateException("Not possible");
     }
 
 }
