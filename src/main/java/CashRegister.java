@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class CashRegister {
 
@@ -61,6 +62,19 @@ public class CashRegister {
                     """;
             return String.format(r, numberOf20, numberOf10, numberOf5, numberOf2, numberOf1);
 
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Cash cash = (Cash) o;
+            return numberOf20 == cash.numberOf20 && numberOf10 == cash.numberOf10 && numberOf5 == cash.numberOf5 && numberOf2 == cash.numberOf2 && numberOf1 == cash.numberOf1;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(numberOf20, numberOf10, numberOf5, numberOf2, numberOf1);
         }
     }
 

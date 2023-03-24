@@ -1,7 +1,10 @@
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.*;
 
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -57,6 +60,21 @@ class CashRegisterTest {
         assertEquals(r.getCash().getNumberOf5(), 1);
         assertEquals(r.getCash().getNumberOf2(), 0);
         assertEquals(r.getCash().getNumberOf1(), 0);
+    }
+
+    @Test
+    void when_provided_return_amount_get_all_possible_available_denominations() {
+        int[] denominations = {20, 10, 5, 2, 1}; //Todo: hardcoded denominations. To be replaced.
+        int[] vals = new int[denominations.length];
+        var possibleCombinations = new ArrayList<CashRegister.Cash>();
+        int returnAmount = 21;
+        var availableCash = new CashRegister.Cash(2, 2, 2, 2, 2);
+        CashRegister.getAllCombinations(0, denominations, vals, returnAmount, possibleCombinations, availableCash);
+        assertEquals(possibleCombinations.size(), 4);
+        assertTrue(possibleCombinations.stream().anyMatch((cash) -> cash.equals(new CashRegister.Cash(1, 0, 0, 0, 1))));
+        assertTrue(possibleCombinations.stream().anyMatch((cash) -> cash.equals(new CashRegister.Cash(0, 1, 1, 2, 2))));
+        assertTrue(possibleCombinations.stream().anyMatch((cash) -> cash.equals(new CashRegister.Cash(0, 1, 2, 0, 1))));
+        assertTrue(possibleCombinations.stream().anyMatch((cash) -> cash.equals(new CashRegister.Cash(0, 2, 0, 0, 1))));
     }
 
 }
